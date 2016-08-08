@@ -71,7 +71,7 @@ std::list<Node*> PathFinder::FindAStar(Node * startNode, Node * endNode)
 	currentNode = endNode;
 	while (currentNode != nullptr)
 	{
-		outList.push_front(currentNode);
+		outList.push_back(currentNode);
 		currentNode = currentNode->parent;
 	}
 	delete currentNode;

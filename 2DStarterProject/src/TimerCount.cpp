@@ -29,5 +29,5 @@ BehaviourResult TimerCount::Execute(Agent * agent, float deltaTime)
 			return Success;
 		}
 	}
-
+	return Failure;
 }

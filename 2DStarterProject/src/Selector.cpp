@@ -20,7 +20,16 @@ Selector::~Selector()
 
 BehaviourResult Selector::Execute(Agent* agent, float deltaTime)
 {
-	currentChild = pendingChild;
+	for (auto b : m_behaviourList)
+	{
+		if (b->Execute(agent, deltaTime) == Success)
+		{
+			return Success;
+		}
+	}
+	return Failure;
+
+	/*currentChild = pendingChild;
 	pendingChild = nullptr;
 
 	if (currentChild == nullptr)
@@ -45,5 +54,5 @@ BehaviourResult Selector::Execute(Agent* agent, float deltaTime)
 			return Pending;
 		}
 		return Failure;
-	}
+	}*/
 }

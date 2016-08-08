@@ -21,7 +21,16 @@ Sequence::~Sequence()
 
 BehaviourResult Sequence::Execute(Agent* agent, float deltaTime)
 {
-	currentChild = pendingChild;
+	for (auto b : m_behaviourList)
+	{
+		if (b->Execute(agent, deltaTime) == Failure)
+		{
+			return Failure;
+		}
+	}
+	return Success;
+
+	/*currentChild = pendingChild;
 	pendingChild = nullptr;
 
 	if (currentChild == nullptr)
@@ -46,5 +55,5 @@ BehaviourResult Sequence::Execute(Agent* agent, float deltaTime)
 			return Pending;
 		}
 	}
-	return Success;
+	return Success;*/
 }

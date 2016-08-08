@@ -33,7 +33,7 @@ BehaviourResult Seek::Execute(Agent * agent, float deltaTime)
 	agent->m_force = v - agent->m_velocity;
 
 	agent->m_velocity += (agent->m_force * deltaTime);
-	agent->GetPosition() += (agent->m_velocity * deltaTime);
+	agent->SetPosition(agent->GetPosition() + (agent->m_velocity * deltaTime));
 
 	if (prevPos != agent->GetPosition())
 	{

@@ -6,10 +6,10 @@ Agent::Agent()
 	m_texture = new Texture("./bin/textures/crate.png");
 	m_position.SetX(200);
 	m_position.SetY(200);
-	m_velocity = Vector2(100, 100);
-	m_acceleration = Vector2(0,0);
+	m_velocity = Vector2(20, 20);
+	m_acceleration = Vector2(10,10);
 	m_force = Vector2(0, 0);
-	m_maxVelocity = Vector2(30, 30);
+	m_maxVelocity = Vector2(100, 100);
 	Node n(Vector2(400, 250));
 	m_nearbyNode = new Node(n);
 	m_currentTarget = new Node(n);
@@ -20,6 +20,7 @@ Agent::~Agent()
 	delete m_texture;
 	delete m_enemy;
 	delete m_nearbyNode;
+	delete m_currentTarget;
 	
 	while (true)
 	{
@@ -39,8 +40,17 @@ void Agent::Update(float deltaTime)
 	{
 		m_currentTarget = m_finalTarget.;
 	}*/
-	IBehaviour* b = m_behaviourList.front();
-	b->Execute(this, deltaTime);
+
+	if (m_currentTarget == nullptr)
+	{
+		m_currentTarget = m_finalTarget.front();
+	}
+
+	for (auto b : m_behaviourList)
+	{
+		b->Execute(this, deltaTime);
+	}
+	
 	/*if (m_target == nullptr)
 	{
 		m_target = m_nearbyNode;
@@ -82,27 +92,22 @@ void Agent::SetPosition(Vector2 v)
 
 void Agent::NextNode()
 {
-	Node* prevNode = nullptr;
-	if (m_currentTarget != nullptr)
+	Node* n = m_finalTarget.front();
+	if (m_position.Distance(m_currentTarget->GetPos()) < 50)
 	{
-		if (m_position.Distance(m_currentTarget->GetPos()) < 50)
+		if (m_path.size() == 1)
 		{
-			if (m_currentTarget == m_path.back())
-			{
-				PathFind(m_nearbyNode, m_finalTarget)
-			}
-			for (auto node : m_path)
-			{
-				if (prevNode == m_currentTarget)
-				{
-					m_currentTarget = node;
-					break;
-				}
-				else if(node )
-				prevNode = node;
-			}
+			m_finalTarget.push_back(n);
+			m_finalTarget.pop_front();
+			PathFind(m_nearbyNode, m_finalTarget.front());
+		}
+		else
+		{
+			m_path.pop_front();
 		}
 	}
+
+	m_currentTarget = m_path.front();
 }
 
 void Agent::PathFind(Node * s, Node * e)

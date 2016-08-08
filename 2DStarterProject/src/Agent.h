@@ -20,8 +20,6 @@ public:
 
 	Vector2 GetPosition();
 	void SetPosition(Vector2 v);
-	void SetTarget(Node* n);
-	Node* GetTarget();
 	void NextNode();
 	void PathFind(Node* s, Node* e);
 
@@ -36,6 +34,8 @@ public:
 	Vector2 m_force;
 	Vector2 m_maxVelocity;
 	
+	int count = 0;
+
 	std::list<IBehaviour *> m_behaviourList;
 
 private:
