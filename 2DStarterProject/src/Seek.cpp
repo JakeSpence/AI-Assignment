@@ -1,16 +1,16 @@
 #include "Seek.h"
 #include "PathFinder.h"
 
-MoveTo::MoveTo()
+Seek::Seek()
 {
 }
 
 
-MoveTo::~MoveTo()
+Seek::~Seek()
 {
 }
 
-BehaviourResult MoveTo::Execute(Agent * agent, float deltaTime)
+BehaviourResult Seek::Execute(Agent * agent, float deltaTime)
 {
 	/*if (agent->m_currentTarget != nullptr)
 	{

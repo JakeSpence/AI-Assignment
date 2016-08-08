@@ -1,10 +1,10 @@
 #pragma once
 #include "Composite.h"
-class MoveTo : public Composite
+class Seek : public Composite
 {
 public:
-	MoveTo();
-	~MoveTo();
+	Seek();
+	~Seek();
 
 	BehaviourResult Execute(Agent * agent, float deltaTime);
 };

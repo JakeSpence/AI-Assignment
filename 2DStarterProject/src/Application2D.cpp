@@ -154,12 +154,19 @@ bool Application2D::startup()
 	m_graph->AddConnections(v, ac);
 
 	m_agentGuard->SetPosition(Vector2(200, 200));
-	m_agentEscapee->SetPosition(Vector2(400, 100));
+	m_agentEscapee->SetPosition(Vector2(100, 100));
 
 	m_agentGuard->m_nearbyNode = m_graph->FindNodesInRange(m_agentGuard->GetPosition(), 200);
 	m_agentEscapee->m_nearbyNode = m_graph->FindNodesInRange(m_agentEscapee->GetPosition(), 200);
 
-	//m_agentGuard->SetTarget(m_agentEscapee->m_nearbyNode);
+	m_agentEscapee->m_finalTarget.push_back(m_graph->FindNodesInRange(400, 400, 10));
+	m_agentGuard->m_finalTarget.push_back(m_graph->FindNodesInRange(100, 100, 10));
+	m_agentGuard->m_finalTarget.push_back(m_graph->FindNodesInRange(400, 100, 10));
+	m_agentGuard->m_finalTarget.push_back(m_graph->FindNodesInRange(100, 400, 10));
+	m_agentGuard->m_finalTarget.push_back(m_graph->FindNodesInRange(400, 400, 10));
+
+	m_agentEscapee->m_enemy = m_agentGuard;
+	m_agentGuard->m_enemy = m_agentEscapee;
 
 	Selector* rootGuard = new Selector(), *rootEscapee = new Selector(), *lostTarget = new Selector();
 	Sequence* chase = new Sequence(), *search = new Sequence(), *travel = new Sequence(), *flee = new Sequence(), *patrol = new Sequence();
@@ -167,7 +174,7 @@ bool Application2D::startup()
 	TimerReset* timerReset = new TimerReset();
 	NextNode* nextN = new NextNode();
 	DetectEnemy* detectE = new DetectEnemy();
-	MoveTo* move = new MoveTo();
+	Seek* move = new Seek();
 	Flee* retreat = new Flee();
 	Distance* distance = new Distance();
 

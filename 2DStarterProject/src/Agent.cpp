@@ -11,7 +11,6 @@ Agent::Agent()
 	m_force = Vector2(0, 0);
 	m_maxVelocity = Vector2(30, 30);
 	Node n(Vector2(400, 250));
-	m_finalTarget = new Node(n);
 	m_nearbyNode = new Node(n);
 	m_currentTarget = new Node(n);
 }
@@ -19,8 +18,7 @@ Agent::Agent()
 Agent::~Agent()
 {
 	delete m_texture;
-	delete m_target;
-	delete m_finalTarget;
+	delete m_enemy;
 	delete m_nearbyNode;
 	
 	while (true)
@@ -37,10 +35,10 @@ void Agent::Update(float deltaTime)
 {
 	//m_velocity += (m_force * deltaTime);
 	//m_position += (m_velocity * deltaTime);
-	if (m_currentTarget == nullptr)
+	/*if (m_currentTarget == nullptr)
 	{
-		m_currentTarget == m_finalTarget;
-	}
+		m_currentTarget = m_finalTarget.;
+	}*/
 	IBehaviour* b = m_behaviourList.front();
 	b->Execute(this, deltaTime);
 	/*if (m_target == nullptr)
@@ -78,31 +76,31 @@ Vector2 Agent::GetPosition()
 }
 
 void Agent::SetPosition(Vector2 v)
-{
+{ 
 	m_position = v;
-}
-
-void Agent::SetTarget(Node * n)
-{
-	m_target = n;
-}
-
-Node * Agent::GetTarget()
-{
-	return m_target;
 }
 
 void Agent::NextNode()
 {
-	if (m_target != nullptr || m_position.Distance(m_target->GetPos()) < 50)
+	Node* prevNode = nullptr;
+	if (m_currentTarget != nullptr)
 	{
-		if (m_target->GetParent() != nullptr)
+		if (m_position.Distance(m_currentTarget->GetPos()) < 50)
 		{
-			m_target = m_target->GetParent();
-		}
-		else
-		{
-			m_target = m_nearbyNode;
+			if (m_currentTarget == m_path.back())
+			{
+				PathFind(m_nearbyNode, m_finalTarget)
+			}
+			for (auto node : m_path)
+			{
+				if (prevNode == m_currentTarget)
+				{
+					m_currentTarget = node;
+					break;
+				}
+				else if(node )
+				prevNode = node;
+			}
 		}
 	}
 }
@@ -110,5 +108,5 @@ void Agent::NextNode()
 void Agent::PathFind(Node * s, Node * e)
 {
 	PathFinder p;
-	p.FindAStar(s, e);
+	m_path = p.FindAStar(s, e);
 }

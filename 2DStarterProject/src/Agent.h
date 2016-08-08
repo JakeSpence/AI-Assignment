@@ -25,7 +25,8 @@ public:
 	void NextNode();
 	void PathFind(Node* s, Node* e);
 
-	Node* m_finalTarget;
+	std::list<Node*> m_finalTarget;
+	Agent* m_enemy = nullptr;
 	Node* m_currentTarget;
 	Node* m_nearbyNode = nullptr;
 	time_t timer = -1;
@@ -34,15 +35,14 @@ public:
 	Vector2 m_acceleration;
 	Vector2 m_force;
 	Vector2 m_maxVelocity;
+	
+	std::list<IBehaviour *> m_behaviourList;
 
 private:
 	Vector2 m_position;
 	
 	Texture* m_texture;
 
-	Node* m_target;
-
-	std::list<IBehaviour *> m_behaviourList;
 	IBehaviour* m_behaviourTree;
 };
 

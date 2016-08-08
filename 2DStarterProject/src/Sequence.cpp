@@ -9,6 +9,14 @@ Sequence::Sequence()
 
 Sequence::~Sequence()
 {
+	if (m_behaviourList.size() != 0)
+	{
+		for (IBehaviour* iB : m_behaviourList)
+		{
+			delete iB;
+		}
+
+	}
 }
 
 BehaviourResult Sequence::Execute(Agent* agent, float deltaTime)
