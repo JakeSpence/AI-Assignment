@@ -6,8 +6,12 @@
 
 class PathFinder : public Graph
 {
+protected:
+	Graph* m_graph;
 public:
 	PathFinder();
 	virtual ~PathFinder();
-	std::list<Node*> FindAStar(Node * startNode, Node * endNode);
+
+	void clearData();
+	std::list<Node*> FindAStar(Node * startNode, Node * endNode, std::vector<Node*> m_nodes);
 };

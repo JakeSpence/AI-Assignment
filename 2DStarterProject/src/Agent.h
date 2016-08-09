@@ -20,8 +20,6 @@ public:
 
 	Vector2 GetPosition();
 	void SetPosition(Vector2 v);
-	void NextNode();
-	void PathFind(Node* s, Node* e);
 
 	std::list<Node*> m_finalTarget;
 	Agent* m_enemy = nullptr;

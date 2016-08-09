@@ -162,25 +162,26 @@ bool Application2D::startup()
 
 	m_agentEscapee->m_finalTarget.push_back(m_graph->FindNodesInRange(400 * graphScale, 250 * graphScale, 10));
 	m_agentGuard->m_finalTarget.push_back(m_graph->FindNodesInRange(100 * graphScale, 100 * graphScale, 10));
+	m_agentGuard->m_finalTarget.push_back(m_graph->FindNodesInRange(400 * graphScale, 250 * graphScale, 10));
 	m_agentGuard->m_finalTarget.push_back(m_graph->FindNodesInRange(400 * graphScale, 100 * graphScale, 10));
 	m_agentGuard->m_finalTarget.push_back(m_graph->FindNodesInRange(100 * graphScale, 250 * graphScale, 10));
-	m_agentGuard->m_finalTarget.push_back(m_graph->FindNodesInRange(400 * graphScale, 250 * graphScale, 10));
+	
 
 	m_agentEscapee->m_enemy = m_agentGuard;
 	m_agentGuard->m_enemy = m_agentEscapee;
 
 	PathFinder path;
-	m_agentEscapee->m_path = path.FindAStar(m_agentEscapee->m_nearbyNode, m_agentEscapee->m_finalTarget.front());
-	m_agentGuard->m_path = path.FindAStar(m_agentGuard->m_nearbyNode, m_agentGuard->m_finalTarget.front());
+	m_agentEscapee->m_path = path.FindAStar(m_agentEscapee->m_nearbyNode, m_agentEscapee->m_finalTarget.front(), m_graph->GetNodeList());
+	m_agentGuard->m_path = path.FindAStar(m_agentGuard->m_nearbyNode, m_agentGuard->m_finalTarget.front(), m_graph->GetNodeList());
 
 	m_agentEscapee->m_currentTarget = m_agentEscapee->m_path.front();
 	m_agentGuard->m_currentTarget = m_agentGuard->m_path.front();
-
+	
 	Selector* rootGuard = new Selector(), *rootEscapee = new Selector(), *lostTarget = new Selector();
 	Sequence* chase = new Sequence(), *search = new Sequence(), *travel = new Sequence(), *flee = new Sequence(), *patrol = new Sequence();
 	TimerCount* timerCount = new TimerCount();
 	TimerReset* timerReset = new TimerReset();
-	NextNode* nextN = new NextNode();
+	NextNode* nextN = new NextNode(m_graph->GetNodeList());
 	DetectEnemy* detectE = new DetectEnemy();
 	Seek* seek = new Seek();
 	Flee* retreat = new Flee();
@@ -195,7 +196,7 @@ bool Application2D::startup()
 	chase->AddChild(seek);
 
 	lostTarget->AddChild(search);
-	lostTarget->AddChild(seek);
+	lostTarget->AddChild(patrol);
 
 	search->AddChild(timerCount);
 	search->AddChild(randPath);
@@ -210,7 +211,7 @@ bool Application2D::startup()
 	flee->AddChild(retreat);
 
 	travel->AddChild(nextN);
-	//travel->AddChild(seek);
+	travel->AddChild(seek);
 
 	m_agentEscapee->AddBehaviour(rootEscapee);
 	m_agentGuard->AddBehaviour(rootGuard);

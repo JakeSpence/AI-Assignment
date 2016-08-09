@@ -11,7 +11,7 @@ Distance::~Distance()
 
 BehaviourResult Distance::Execute(Agent * agent, float deltaTime)
 {
-	if (agent->m_currentTarget->GetPos().Distance(agent->m_enemy->GetPosition()) < 50)
+	if (agent->m_currentTarget->GetPos().Distance(agent->m_enemy->GetPosition()) < 100)	
 	{
 		return Success;
 	}

@@ -34,13 +34,6 @@ Agent::~Agent()
 
 void Agent::Update(float deltaTime)
 {
-	//m_velocity += (m_force * deltaTime);
-	//m_position += (m_velocity * deltaTime);
-	/*if (m_currentTarget == nullptr)
-	{
-		m_currentTarget = m_finalTarget.;
-	}*/
-
 	if (m_currentTarget == nullptr)
 	{
 		m_currentTarget = m_finalTarget.front();
@@ -50,19 +43,6 @@ void Agent::Update(float deltaTime)
 	{
 		b->Execute(this, deltaTime);
 	}
-	
-	/*if (m_target == nullptr)
-	{
-		m_target = m_nearbyNode;
-	}
-	Vector2 v = m_position - m_target->GetPos();
-	v.Normalise();
-	v = v * m_maxVelocity;
-	m_force = v - m_velocity;
-
-	m_velocity += (m_force * deltaTime);
-	m_position += (m_velocity * deltaTime);*/
-	//heading = normailise(m_velocity);
 }
 
 void Agent::Addforce(Vector2 force)
@@ -88,30 +68,4 @@ Vector2 Agent::GetPosition()
 void Agent::SetPosition(Vector2 v)
 { 
 	m_position = v;
-}
-
-void Agent::NextNode()
-{
-	Node* n = m_finalTarget.front();
-	if (m_position.Distance(m_currentTarget->GetPos()) < 50)
-	{
-		if (m_path.size() == 1)
-		{
-			m_finalTarget.push_back(n);
-			m_finalTarget.pop_front();
-			PathFind(m_nearbyNode, m_finalTarget.front());
-		}
-		else
-		{
-			m_path.pop_front();
-		}
-	}
-
-	m_currentTarget = m_path.front();
-}
-
-void Agent::PathFind(Node * s, Node * e)
-{
-	PathFinder p;
-	m_path = p.FindAStar(s, e);
 }

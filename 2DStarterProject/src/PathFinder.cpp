@@ -11,7 +11,11 @@ PathFinder::~PathFinder()
 {
 }
 
-std::list<Node*> PathFinder::FindAStar(Node * startNode, Node * endNode)
+void PathFinder::clearData()
+{
+}
+
+std::list<Node*> PathFinder::FindAStar(Node * startNode, Node * endNode, std::vector<Node*> m_nodes)
 {
 	std::list<Node*> openList;
 	std::list<Node*> closedList;
