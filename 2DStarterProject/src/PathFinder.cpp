@@ -20,11 +20,13 @@ std::list<Node*> PathFinder::FindAStar(Node * startNode, Node * endNode)
 	for (Node* node : m_nodes)
 	{
 		node->SetGScore(std::numeric_limits<float>::max());
+		node->SetHScore(0);
+		node->SetFScore(0);
 		node->parent = nullptr;
 	}
 
 
-	Node* currentNode = new Node();
+	Node* currentNode;// = new Node();
 	startNode->SetGScore(0);
 	openList.push_back(startNode);
 
@@ -43,26 +45,37 @@ std::list<Node*> PathFinder::FindAStar(Node * startNode, Node * endNode)
 		}
 
 		openList.remove(currentNode);
+		//openList.pop_front();
 		closedList.push_back(currentNode);	
 
 		for (Edge connections : currentNode->GetConnections())
 		{
-			float gScore = currentNode->GetGScore() + connections.GetCost();
+			//float gScore = currentNode->GetGScore() + connections.GetCost();
 			
+			bool traversed = false;
 			for (Node * node : closedList)
 			{
 				if (node == connections.GetConnectionNode())
 				{
-					openList.push_back(connections.GetConnectionNode());
+					traversed = true;
+					break;
 				}
 			}
-
-			if (currentNode->GetGScore() + connections.GetCost() < connections.GetConnectionNode()->GetGScore())
+			if (!traversed)
 			{
-				Node * n = connections.GetConnectionNode();
-				n->SetGScore(currentNode->GetGScore() + connections.GetCost());
-				n->SetHScore(n->GetPos().Distance(endNode->GetPos()));
-				n->SetFScore(n->GetGScore() + n->GetHScore());
+				openList.push_back(connections.GetConnectionNode());
+			}
+
+			Node * n = connections.GetConnectionNode();
+			float newGscore = currentNode->GetGScore() + connections.GetCost();
+			float newHscore = n->GetPos().Distance(endNode->GetPos());
+			float newFscore = newGscore + newHscore;
+
+			if (newFscore < n->GetFScore() || n->GetParent() == nullptr)
+			{
+				n->SetGScore(newGscore);
+				n->SetHScore(newHscore);
+				n->SetFScore(newFscore);
 				n->parent = currentNode;
 			}
 		}
@@ -73,7 +86,9 @@ std::list<Node*> PathFinder::FindAStar(Node * startNode, Node * endNode)
 	{
 		outList.push_back(currentNode);
 		currentNode = currentNode->parent;
+		if (currentNode == startNode)
+			break;
 	}
-	delete currentNode;
+	outList.reverse();
 	return outList;
 }

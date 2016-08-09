@@ -24,6 +24,7 @@
     <ClCompile Include="src\IBehaviour.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Application2D.cpp" />
+    <ClCompile Include="src\RandomPath.cpp" />
     <ClCompile Include="src\Seek.cpp" />
     <ClCompile Include="src\NextNode.cpp" />
     <ClCompile Include="src\Node.cpp" />
@@ -49,6 +50,7 @@
     <ClInclude Include="src\Application2D.h" />
     <ClInclude Include="src\Graph.h" />
     <ClInclude Include="src\IBehaviour.h" />
+    <ClInclude Include="src\RandomPath.h" />
     <ClInclude Include="src\Seek.h" />
     <ClInclude Include="src\NextNode.h" />
     <ClInclude Include="src\Node.h" />

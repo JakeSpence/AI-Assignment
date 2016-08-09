@@ -18,16 +18,9 @@ BehaviourResult TimerCount::Execute(Agent * agent, float deltaTime)
 	{
 		time(&agent->timer);
 	}
-	else
+	if (difftime(currentTime, agent->timer) > 5)
 	{
-		if (difftime(agent->timer, currentTime) > 10)
-		{
-			return Failure;
-		}
-		else
-		{
-			return Success;
-		}
+		return Failure;
 	}
-	return Failure;
+	return Success;
 }

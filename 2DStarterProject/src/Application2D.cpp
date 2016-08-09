@@ -16,6 +16,7 @@
 #include "Seek.h"
 #include "Flee.h"
 #include "Distance.h"
+#include "RandomPath.h"
 
 Application2D::Application2D() 
 {
@@ -181,25 +182,26 @@ bool Application2D::startup()
 	TimerReset* timerReset = new TimerReset();
 	NextNode* nextN = new NextNode();
 	DetectEnemy* detectE = new DetectEnemy();
-	Seek* move = new Seek();
+	Seek* seek = new Seek();
 	Flee* retreat = new Flee();
 	Distance* distance = new Distance();
+	RandomPath* randPath = new RandomPath();
 
 	rootGuard->AddChild(chase);
 	rootGuard->AddChild(lostTarget);
 
 	chase->AddChild(detectE);
 	chase->AddChild(timerReset);
-	chase->AddChild(move);
+	chase->AddChild(seek);
 
 	lostTarget->AddChild(search);
-	lostTarget->AddChild(travel);
+	lostTarget->AddChild(seek);
 
 	search->AddChild(timerCount);
-	//search->AddChild();
+	search->AddChild(randPath);
 
 	patrol->AddChild(nextN);
-	patrol->AddChild(move);
+	patrol->AddChild(seek);
 
 	rootEscapee->AddChild(flee);
 	rootEscapee->AddChild(travel);
@@ -208,7 +210,7 @@ bool Application2D::startup()
 	flee->AddChild(retreat);
 
 	travel->AddChild(nextN);
-	travel->AddChild(move);
+	//travel->AddChild(seek);
 
 	m_agentEscapee->AddBehaviour(rootEscapee);
 	m_agentGuard->AddBehaviour(rootGuard);
