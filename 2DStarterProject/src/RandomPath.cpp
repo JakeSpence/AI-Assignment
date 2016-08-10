@@ -17,15 +17,23 @@ BehaviourResult RandomPath::Execute(Agent * agent, float deltaTime)
 {
 	int randomNode = rand() % agent->m_nearbyNode->GetConnections().size();
 	int count = 0;
+	float dis = agent->m_nearbyNode->GetPos().Distance(agent->GetPosition());
 
-	for (Edge e : agent->m_nearbyNode->GetConnections())
+	if (dis < 5)
 	{
-		if (count == randomNode)
+		for (Edge e : agent->m_nearbyNode->GetConnections())
 		{
-			agent->m_currentTarget = e.GetConnectionNode();
-			return Success;
+			if (count == randomNode)
+			{
+				agent->m_currentTarget = e.GetConnectionNode();
+				return Success;
+			}
+			count++;
 		}
-		count++;
+	}
+	else if(agent->m_nearbyNode->GetPos().Distance(agent->GetPosition()) < 5)
+	{
+		return Success;
 	}
 	return Failure;
 }

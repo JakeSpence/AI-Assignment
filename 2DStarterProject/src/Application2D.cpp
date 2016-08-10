@@ -161,6 +161,7 @@ bool Application2D::startup()
 	m_agentEscapee->m_nearbyNode = m_graph->FindNodesInRange(m_agentEscapee->GetPosition(), 200);
 
 	m_agentEscapee->m_finalTarget.push_back(m_graph->FindNodesInRange(400 * graphScale, 250 * graphScale, 10));
+	m_agentEscapee->m_finalTarget.push_back(m_agentEscapee->m_nearbyNode);
 	m_agentGuard->m_finalTarget.push_back(m_graph->FindNodesInRange(100 * graphScale, 100 * graphScale, 10));
 	m_agentGuard->m_finalTarget.push_back(m_graph->FindNodesInRange(400 * graphScale, 250 * graphScale, 10));
 	m_agentGuard->m_finalTarget.push_back(m_graph->FindNodesInRange(400 * graphScale, 100 * graphScale, 10));
@@ -177,41 +178,55 @@ bool Application2D::startup()
 	m_agentEscapee->m_currentTarget = m_agentEscapee->m_path.front();
 	m_agentGuard->m_currentTarget = m_agentGuard->m_path.front();
 	
-	Selector* rootGuard = new Selector(), *rootEscapee = new Selector(), *lostTarget = new Selector();
-	Sequence* chase = new Sequence(), *search = new Sequence(), *travel = new Sequence(), *flee = new Sequence(), *patrol = new Sequence();
-	TimerCount* timerCount = new TimerCount();
-	TimerReset* timerReset = new TimerReset();
-	NextNode* nextN = new NextNode(m_graph->GetNodeList());
-	DetectEnemy* detectE = new DetectEnemy();
-	Seek* seek = new Seek();
-	Flee* retreat = new Flee();
-	Distance* distance = new Distance();
-	RandomPath* randPath = new RandomPath();
+	Selector* rootEscapee = new Selector(), *rootGuard = new Selector();
 
-	rootGuard->AddChild(chase);
-	rootGuard->AddChild(lostTarget);
+	// Escapee tree
+	{
+		
+		Sequence* flee = new Sequence(), *travel = new Sequence();
+		Distance* detectE = new Distance();
+		Flee* retreat = new Flee();
+		NextNode* nextN = new NextNode(m_graph->GetNodeList());
+		Seek* seek = new Seek();
 
-	chase->AddChild(detectE);
-	chase->AddChild(timerReset);
-	chase->AddChild(seek);
+		rootEscapee->AddChild(flee);
+		rootEscapee->AddChild(travel);
 
-	lostTarget->AddChild(search);
-	lostTarget->AddChild(patrol);
+		flee->AddChild(detectE);
+		flee->AddChild(retreat);
 
-	search->AddChild(timerCount);
-	search->AddChild(randPath);
+		travel->AddChild(nextN);
+		travel->AddChild(seek);
+	}
 
-	patrol->AddChild(nextN);
-	patrol->AddChild(seek);
+	// Guard tree
+	{
+		Selector* lostTarget = new Selector();
+		Sequence* chase = new Sequence(), *search = new Sequence(), *patrol = new Sequence();
+		TimerCount* timerCount = new TimerCount();
+		TimerReset* timerReset = new TimerReset();
+		RandomPath* randPath = new RandomPath();
+		Seek* seek1 = new Seek(), *seek2 = new Seek(), *seek3 = new Seek();
+		NextNode* nextN = new NextNode(m_graph->GetNodeList());
+		DetectEnemy* detectE = new DetectEnemy();
 
-	rootEscapee->AddChild(flee);
-	rootEscapee->AddChild(travel);
+		//rootGuard->AddChild(chase);
+		rootGuard->AddChild(lostTarget);
 
-	flee->AddChild(detectE);
-	flee->AddChild(retreat);
+		/*chase->AddChild(detectE);
+		chase->AddChild(timerReset);
+		chase->AddChild(seek1);*/
 
-	travel->AddChild(nextN);
-	travel->AddChild(seek);
+		lostTarget->AddChild(search);
+		//lostTarget->AddChild(patrol);
+
+		//search->AddChild(timerCount);
+		search->AddChild(randPath);
+		search->AddChild(seek2);
+
+		/*patrol->AddChild(nextN);
+		patrol->AddChild(seek3);*/
+	}
 
 	m_agentEscapee->AddBehaviour(rootEscapee);
 	m_agentGuard->AddBehaviour(rootGuard);
@@ -237,8 +252,8 @@ bool Application2D::update(float deltaTime) {
 	if (hasWindowClosed() || isKeyPressed(GLFW_KEY_ESCAPE))
 		return false;
 
-	m_agentGuard->m_nearbyNode = m_graph->FindNodesInRange(m_agentGuard->GetPosition(), 200);
-	m_agentEscapee->m_nearbyNode = m_graph->FindNodesInRange(m_agentEscapee->GetPosition(), 200);
+	m_agentGuard->m_nearbyNode = m_graph->FindNodesInRange(m_agentGuard->GetPosition(), 100);
+	m_agentEscapee->m_nearbyNode = m_graph->FindNodesInRange(m_agentEscapee->GetPosition(), 100);
 
 	m_agentGuard->Update(deltaTime);
 	m_agentEscapee->Update(deltaTime);

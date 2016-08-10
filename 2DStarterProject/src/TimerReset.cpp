@@ -12,6 +12,6 @@ TimerReset::~TimerReset()
 
 BehaviourResult TimerReset::Execute(Agent * agent, float deltaTime)
 {	
-	time(&agent->timer);
+	time(&agent->m_timer);
 	return Success;
 }

@@ -15,7 +15,9 @@ BehaviourResult TimerCount::Execute(Agent * agent, float deltaTime)
 	time_t currentTime;
 	time(&currentTime);
 
-	if (difftime(agent->timer, currentTime) < 5 && difftime(agent->timer, currentTime) > 0)
+	float f = difftime(currentTime, agent->m_timer);
+
+	if (f < 5 /*&& difftime(agent->timer, currentTime) > 0*/)
 	{
 		return Success;
 	}

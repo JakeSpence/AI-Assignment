@@ -25,7 +25,7 @@ public:
 	Agent* m_enemy = nullptr;
 	Node* m_currentTarget;
 	Node* m_nearbyNode = nullptr;
-	time_t timer = -1;
+	time_t m_timer = -1;
 	std::list<Node *> m_path;
 	Vector2 m_velocity;
 	Vector2 m_acceleration;

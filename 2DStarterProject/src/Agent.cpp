@@ -1,5 +1,6 @@
 #include "Agent.h"
 #include "PathFinder.h"
+#include <time.h>
 
 Agent::Agent()
 {
@@ -11,25 +12,23 @@ Agent::Agent()
 	m_force = Vector2(0, 0);
 	m_maxVelocity = Vector2(100, 100);
 	Node n(Vector2(400, 250));
-	m_nearbyNode = new Node(n);
-	m_currentTarget = new Node(n);
+	m_nearbyNode = nullptr;
+	m_currentTarget = nullptr;
+	time(&m_timer);
 }
 
 Agent::~Agent()
 {
 	delete m_texture;
-	delete m_enemy;
-	delete m_nearbyNode;
-	delete m_currentTarget;
 	
-	while (true)
+	/*while (true)
 	{
 		delete m_behaviourTree;
 		for (IBehaviour* b : m_behaviourTree->m_behaviourList)
 		{
 			delete b;
 		}
-	}
+	}*/
 }
 
 void Agent::Update(float deltaTime)
