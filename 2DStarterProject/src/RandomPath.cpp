@@ -23,7 +23,7 @@ BehaviourResult RandomPath::Execute(Agent * agent, float deltaTime)
 	{
 		for (Edge e : agent->m_nearbyNode->GetConnections())
 		{
-			if (count == randomNode)
+			if (count == randomNode && e.GetConnectionNode() != agent->m_nearbyNode)
 			{
 				agent->m_currentTarget = e.GetConnectionNode();
 				return Success;

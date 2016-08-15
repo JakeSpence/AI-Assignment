@@ -45,6 +45,10 @@ void Node::SetPos(Vector2 v)
 
 Vector2 Node::GetPos()
 {
+	if (pos == nullptr)
+	{
+		return Vector2(0, 0);
+	}
 	return pos;
 }
 
@@ -87,8 +91,3 @@ Node * Node::GetParent()
 {
 	return parent;
 }
-
-/*void Node::SetParent(Node * n)
-{
-	parent = n;
-}*/

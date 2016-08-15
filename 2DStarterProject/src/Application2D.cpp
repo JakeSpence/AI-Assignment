@@ -44,32 +44,6 @@ bool Application2D::startup()
 
 	float graphScale = 2.5f;
 
-	/*int countW = 50;
-	int countH = 50;
-	Node* previous = nullptr;
-	Node* below = nullptr;
-	for (int i = 0; i < 5; i++)
-	{
-		for (int j = 0; j < 9; j++)
-		{
-			Node* current = m_graph->AddNode(countH * graphScale, countW * graphScale);
-			if (previous != nullptr)
-			{
-				m_graph->AddConnections(previous, current);
-			}
-			if(i > 0)
-			{
-				below = m_graph->GetNodeList().begin() + j;
-				m_graph->AddConnections(current, below);
-			}
-			previous = current;
-			countH += 50;
-		}
-		countH = 50;
-		countW += 50;
-		previous = nullptr;
-	}*/
-
 	Node *b = m_graph->AddNode(100 * graphScale, 100 * graphScale);
 	Node *c = m_graph->AddNode(150 * graphScale, 100 * graphScale);
 	Node *d = m_graph->AddNode(200 * graphScale, 100 * graphScale);
@@ -155,13 +129,16 @@ bool Application2D::startup()
 	m_graph->AddConnections(v, ac);
 
 	m_agentGuard->SetPosition(Vector2(200 * graphScale, 200 * graphScale));
-	m_agentEscapee->SetPosition(Vector2(100 * graphScale, 100 * graphScale));
+	m_agentEscapee->SetPosition(Vector2(400 * graphScale, 100 * graphScale));
 
 	m_agentGuard->m_nearbyNode = m_graph->FindNodesInRange(m_agentGuard->GetPosition(), 200);
 	m_agentEscapee->m_nearbyNode = m_graph->FindNodesInRange(m_agentEscapee->GetPosition(), 200);
 
+	m_agentEscapee->m_finalTarget.push_back(m_graph->FindNodesInRange(100 * graphScale, 250 * graphScale, 10));
+	m_agentEscapee->m_finalTarget.push_back(m_graph->FindNodesInRange(100 * graphScale, 100 * graphScale, 10));	
+	m_agentEscapee->m_finalTarget.push_back(m_graph->FindNodesInRange(400 * graphScale, 100 * graphScale, 10));
 	m_agentEscapee->m_finalTarget.push_back(m_graph->FindNodesInRange(400 * graphScale, 250 * graphScale, 10));
-	m_agentEscapee->m_finalTarget.push_back(m_agentEscapee->m_nearbyNode);
+	
 	m_agentGuard->m_finalTarget.push_back(m_graph->FindNodesInRange(100 * graphScale, 100 * graphScale, 10));
 	m_agentGuard->m_finalTarget.push_back(m_graph->FindNodesInRange(400 * graphScale, 250 * graphScale, 10));
 	m_agentGuard->m_finalTarget.push_back(m_graph->FindNodesInRange(400 * graphScale, 100 * graphScale, 10));
@@ -170,6 +147,8 @@ bool Application2D::startup()
 
 	m_agentEscapee->m_enemy = m_agentGuard;
 	m_agentGuard->m_enemy = m_agentEscapee;
+
+	m_agentGuard->m_maxVelocity = m_agentGuard->m_maxVelocity - Vector2(50, 50);
 
 	PathFinder path;
 	m_agentEscapee->m_path = path.FindAStar(m_agentEscapee->m_nearbyNode, m_agentEscapee->m_finalTarget.front(), m_graph->GetNodeList());
@@ -184,16 +163,17 @@ bool Application2D::startup()
 	{
 		
 		Sequence* flee = new Sequence(), *travel = new Sequence();
-		Distance* detectE = new Distance();
+		Distance* distance = new Distance();
 		Flee* retreat = new Flee();
 		NextNode* nextN = new NextNode(m_graph->GetNodeList());
-		Seek* seek = new Seek();
+		Seek* seek = new Seek(), *seek2 = new Seek();
 
 		rootEscapee->AddChild(flee);
 		rootEscapee->AddChild(travel);
 
-		flee->AddChild(detectE);
+		flee->AddChild(distance);
 		flee->AddChild(retreat);
+		flee->AddChild(seek2);
 
 		travel->AddChild(nextN);
 		travel->AddChild(seek);
@@ -205,27 +185,24 @@ bool Application2D::startup()
 		Sequence* chase = new Sequence(), *search = new Sequence(), *patrol = new Sequence();
 		TimerCount* timerCount = new TimerCount();
 		TimerReset* timerReset = new TimerReset();
-		RandomPath* randPath = new RandomPath();
-		Seek* seek1 = new Seek(), *seek2 = new Seek(), *seek3 = new Seek();
+		Seek* seek1 = new Seek(), *seek2 = new Seek();
 		NextNode* nextN = new NextNode(m_graph->GetNodeList());
 		DetectEnemy* detectE = new DetectEnemy();
 
-		//rootGuard->AddChild(chase);
+		rootGuard->AddChild(chase);
 		rootGuard->AddChild(lostTarget);
 
-		/*chase->AddChild(detectE);
+		chase->AddChild(detectE);
 		chase->AddChild(timerReset);
-		chase->AddChild(seek1);*/
+		chase->AddChild(seek1);
 
 		lostTarget->AddChild(search);
-		//lostTarget->AddChild(patrol);
+		lostTarget->AddChild(patrol);
 
-		//search->AddChild(timerCount);
-		search->AddChild(randPath);
-		search->AddChild(seek2);
+		search->AddChild(timerCount);
 
-		/*patrol->AddChild(nextN);
-		patrol->AddChild(seek3);*/
+		patrol->AddChild(nextN);
+		patrol->AddChild(seek2);
 	}
 
 	m_agentEscapee->AddBehaviour(rootEscapee);
@@ -279,25 +256,11 @@ void Application2D::draw() {
 	for (auto& node : m_graph->GetNodeList())
 	{
 		m_spriteBatch->drawSprite(m_nodeTexture, node->GetPos().GetX(), node->GetPos().GetY(), 30, 30);
-		for (auto& edge : node->GetConnections())
+		/*for (auto& edge : node->GetConnections())
 		{
 			m_spriteBatch->drawLine(node->GetPos().GetX(), node->GetPos().GetY(), edge.GetConnectionNode()->GetPos().GetX(), edge.GetConnectionNode()->GetPos().GetY());
-		}
+		}*/
 	}
-	/*if (m_startNode != nullptr)
-	{
-		m_spriteBatch->drawSprite(m_nodeTexture, m_startNode->GetPos().GetX(), m_startNode->GetPos().GetY(), 30, 30);
-	}
-	if (m_endNode != nullptr)
-	{
-		std::list<Node*> outPath;
-		PathFinder find;
-		find.FindAStar(m_startNode, m_endNode);
-		for (auto& node : outPath)
-		{
-			m_spriteBatch->drawSprite(m_nodeTexture, node->GetPos().GetX(), node->GetPos().GetY(), 30, 30);
-		}
-	}*/
 
 	// done drawing sprites
 	m_spriteBatch->end();	

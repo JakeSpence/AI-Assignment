@@ -10,20 +10,17 @@ Flee::~Flee()
 }
 
 BehaviourResult Flee::Execute(Agent * agent, float deltaTime)
-{
-	Vector2 prevPos = agent->GetPosition();
-	Vector2 v = agent->GetPosition() - agent->m_currentTarget->GetPos();
-	v.Normalise();
-	v = v * agent->m_maxVelocity;
-	agent->m_force = v - agent->m_velocity;
+{	
+	int randomNode = rand() % agent->m_nearbyNode->GetConnections().size();
+	int count = 0;
 
-	agent->m_velocity += (agent->m_force * deltaTime);
-	agent->SetPosition(agent->GetPosition() + (agent->m_velocity * deltaTime));
-
-	if (prevPos != agent->GetPosition())
+	for (Edge e : agent->m_nearbyNode->GetConnections())
 	{
-		return Success;
+		if (e.GetConnectionNode() != agent->m_enemy->m_nearbyNode && count == randomNode)
+		{
+			agent->m_currentTarget = e.GetConnectionNode();
+			return Success;
+		}
 	}
-
 	return Failure;
 }
